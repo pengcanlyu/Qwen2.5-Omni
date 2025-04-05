@@ -16,11 +16,6 @@ from qwen_omni_utils import process_mm_info
 from argparse import ArgumentParser
 
 def _load_model_processor(args):
-    if args.cpu_only:
-        device_map = 'cpu'
-    else:
-        device_map = 'auto'
-
     # Check if flash-attn2 flag is enabled and load model accordingly
     if args.flash_attn2:
         model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path,
