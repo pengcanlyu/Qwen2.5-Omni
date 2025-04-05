@@ -1,7 +1,7 @@
 import io
 import os
 import ffmpeg
-
+import torch
 import numpy as np
 import gradio as gr
 import soundfile as sf 
@@ -24,11 +24,13 @@ def _load_model_processor(args):
     # Check if flash-attn2 flag is enabled and load model accordingly
     if args.flash_attn2:
         model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path,
-                                                    torch_dtype='auto',
+                                                    torch_dtype=torch.bfloat16,
                                                     attn_implementation='flash_attention_2',
                                                     device_map=device_map)
     else:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, device_map=device_map, torch_dtype='auto')
+        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, 
+                                                   device_map=device_map, 
+                                                   torch_dtype=torch.bfloat16)
 
     processor = Qwen2_5OmniProcessor.from_pretrained(args.checkpoint_path)
     return model, processor
