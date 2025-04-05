@@ -1,4 +1,5 @@
 pyngrok
+triton
 gradio==5.23.1
 gradio_client==1.8.0
 qwen-omni-utils==0.0.3
