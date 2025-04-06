@@ -421,7 +421,7 @@ def _get_args():
     
     parser.add_argument('--flash-attn2',
                         action='store_true',
-                        default=False,
+                        default=True,
                         help='Enable flash_attention_2 when loading the model.')
     parser.add_argument('--share',
                         action='store_true',
