@@ -16,13 +16,7 @@ from qwen_omni_utils import process_mm_info
 from argparse import ArgumentParser
 
 def _load_model_processor(args):
-    # Check if flash-attn2 flag is enabled and load model accordingly
-    if args.flash_attn2:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path,
-                                                    torch_dtype=torch.bfloat16,
-                                                    attn_implementation='flash_attention_2',
-                                                    device_map={
-    # Thinker前几层 + 其他组件放GPU0
+    device_map={
     "thinker.audio_tower": 0,
     "thinker.visual": 0,
     "thinker.model.embed_tokens": 0,
@@ -35,8 +29,6 @@ def _load_model_processor(args):
     "thinker.model.layers.6": 0,
     "thinker.model.layers.7": 1,
     "thinker.model.layers.8": 1,
-    
-    # Thinker后面几层放GPU1
     "thinker.model.layers.9": 1,
     "thinker.model.layers.10": 1,
     "thinker.model.layers.11": 1,
@@ -60,13 +52,17 @@ def _load_model_processor(args):
     "thinker.model.rotary_emb": 0,
     "thinker.lm_head": 0,
     "talker": 0,
-    "token2wav": 0,
-})
-    else:
-        model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, 
-                                                   device_map=device_map, 
-                                                   torch_dtype=torch.bfloat16)
+    "token2wav": 0
+    }
+    model_kwargs = {
+        "torch_dtype": torch.bfloat16,
+        "device_map": device_map
+    }
 
+    if args.flash_attn2:
+        model_kwargs["attn_implementation"] = "flash_attention_2"
+
+    model = Qwen2_5OmniModel.from_pretrained(args.checkpoint_path, **model_kwargs)
     processor = Qwen2_5OmniProcessor.from_pretrained(args.checkpoint_path)
     return model, processor
 
@@ -422,8 +418,7 @@ def _get_args():
                         type=str,
                         default=DEFAULT_CKPT_PATH,
                         help='Checkpoint name or path, default to %(default)r')
-    parser.add_argument('--cpu-only', action='store_true', help='Run demo with CPU only')
-
+    
     parser.add_argument('--flash-attn2',
                         action='store_true',
                         default=False,
