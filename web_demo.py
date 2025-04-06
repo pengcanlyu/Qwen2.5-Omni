@@ -409,7 +409,7 @@ def _launch_demo(args, model, processor):
                                                                 server_name=args.server_name,)
 
 
-DEFAULT_CKPT_PATH = "Qwen/Qwen2.5-Omni-7B"
+DEFAULT_CKPT_PATH = "/kaggle/input/qwen2.5-omni-7b/transformers/qwen/1"
 def _get_args():
     parser = ArgumentParser()
 
